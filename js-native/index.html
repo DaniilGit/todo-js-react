@@ -8,12 +8,27 @@
   <title>ToDo</title>
 </head>
 <body>
-  <div class="todo">
+  <div class="todo" id="todo">
+
     <h1 class="title">todos</h1>
+
     <form class="todo-list" id="todo-form">
-      <label id="todo-btn-check" class="todo-btn show-btn"></label>
+      <label id="todo-btn-check" class="todo-btn hide"></label>
       <input id="todo-input" class="todo-input" type="text" placeholder="What needs to be done?">
     </form>
+
+    <div id="tasks"></div>
+
+    <div class="footer-menu hide" id="footer-menu">
+      <span class="counter-tasks" id="counter-tasks">1</span>
+      <div class="footer-btns">
+        <button class="menu-btn" id="all-btn">All</button>
+        <button class="menu-btn" id="active-btn">Active</button>
+        <button class="menu-btn" id="completed-btn">Completed</button>
+      </div>
+      <button class="clear-btn" id="clear-btn">Clear completed</button>
+    </div>
+
   </div>
   <script src="./script.js"></script>
 </body>
