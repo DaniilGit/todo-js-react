@@ -1,12 +1,16 @@
 class Todo {
   constructor() {
     this.todoList = [];
-    this.counterActiveTasks = 0;
+    this.countActiveTasks = 0;
     this.tasks = document.getElementById("tasks");
     this.todoForm = document.getElementById("todo-form");
     this.todoInput = document.getElementById("todo-input");
     this.btnCompleteAllTasks = document.getElementById("todo-btn-check");
     this.btnClearCompletedTask = document.getElementById("clear-btn");
+
+    this.btnAllTasks = document.getElementById("all-btn");
+    this.btnOnlyActiveTasks = document.getElementById("active-btn");
+    this.btnOnlyCompletedTasks = document.getElementById("completed-btn");
 
     this.subsribeEvents();
   }
@@ -14,57 +18,69 @@ class Todo {
   subsribeEvents() {
     this.todoForm.onsubmit = () => {
       this.addNewTask();
-      this.checkNumberTasks();
+      this.toggleVisibleButtonAndMenu();
+      this.showCounterActiveTasks();
       return false;
     };
 
     this.tasks.onchange = () => {
       this.checkCompletedTasks();
+      this.showCounterActiveTasks();
     };
 
-    this.tasks.onclick = () => {
-      this.clearDeletedTasks();
-      this.checkNumberTasks();
+    this.tasks.onclick = (event) => {
+      let target = event.target;
+      if (target.nodeName == "BUTTON") {
+        this.clearDeletedTask();
+        this.toggleVisibleButtonAndMenu();
+        this.showCounterActiveTasks();
+      }
     };
 
     this.btnCompleteAllTasks.onclick = () => {
-      this.checkedAllTasks();
+      this.checkAllTasks();
       this.checkCompletedTasks();
+      this.showCounterActiveTasks();
     };
 
     this.btnClearCompletedTask.onclick = () => {
       this.clearCompletedTask();
-      this.checkNumberTasks();
-    }
+      this.toggleVisibleButtonAndMenu();
+    };
+
+    this.btnAllTasks.onclick = () => {
+      this.showAllTasks();
+    };
+
+    this.btnOnlyActiveTasks.onclick = () => {
+      this.showOnlyActiveTasks();
+    };
+
+    this.btnOnlyCompletedTasks.onclick = () => {
+      this.showOnlyCompletedTasks();
+    };
   }
 
   addNewTask() {
     let textTask = this.todoInput.value;
     const task = new TodoTask(textTask);
 
-    this.counterActiveTasks++;
+    this.countActiveTasks++;
     this.todoList.push(task);
     this.todoInput.value = "";
 
-    this.renderTasks();
+    this.renderTasks(this.todoList);
   }
 
-  renderTasks() {
-    this.todoList.forEach((task) => {
-      this.tasks.append(task.taskHtml)
-    })
+  renderTasks(tasksList) {
+    this.tasks.innerHTML = "";
+    tasksList.forEach((task) => {
+      this.tasks.append(task.taskHtml);
+    });
   }
 
-  checkNumberTasks() {
-    this.toggleVisibleButtonAndMenu();
-
-    if (this.todoList.length) {
-    } else {
-    }
-  }
-
-  checkedAllTasks() {
-    if (this.counterActiveTasks == 0) this.completeOrUncompleteAllTasks(false);
+  checkAllTasks() {
+    if (this.countActiveTasks == 0) this.completeOrUncompleteAllTasks(false);
     else this.completeOrUncompleteAllTasks(true);
   }
 
@@ -77,12 +93,12 @@ class Todo {
   }
 
   checkCompletedTasks() {
-    this.counterActiveTasks = 0;
+    this.countActiveTasks = 0;
     this.todoList.forEach((task) => {
       let blockTaskText = task.taskHtml.children[1];
       if (task.isCompleted) blockTaskText.classList.add("completed");
       else {
-        this.counterActiveTasks++;
+        this.countActiveTasks++;
         blockTaskText.classList.remove("completed");
       }
     });
@@ -90,33 +106,54 @@ class Todo {
 
   clearCompletedTask() {
     let bufferList = [];
-    this.counterActiveTasks = 0;
 
     this.todoList.forEach((task) => {
-      if (!task.isCompleted) {
-        bufferList.push(task)
-        this.counterActiveTasks++;
-      }
+      if (!task.isCompleted) bufferList.push(task);
     });
 
     this.todoList = bufferList;
-    this.tasks.innerHTML = ''
-    this.renderTasks();
+    this.renderTasks(this.todoList);
   }
 
-  clearDeletedTasks() {
+  clearDeletedTask() {
     let bufferList = [];
 
     this.todoList.forEach((task) => {
-      if (!task.isDeleted) {
-        bufferList.push(task)
-        if (!task.isCompleted) this.counterActiveTasks--;
-      }
+      if (!task.isDeleted) bufferList.push(task);
+      else if (!task.isCompleted) this.countActiveTasks--;
     });
 
     this.todoList = bufferList;
-    this.tasks.innerHTML = ''
-    this.renderTasks();
+    this.renderTasks(this.todoList);
+  }
+
+  showAllTasks() {
+    this.renderTasks(this.todoList);
+  }
+
+  showOnlyActiveTasks() {
+    let bufferList = [];
+
+    this.todoList.forEach((task) => {
+      if (!task.isCompleted) bufferList.push(task);
+    });
+
+    this.renderTasks(bufferList);
+  }
+
+  showOnlyCompletedTasks() {
+    let bufferList = [];
+
+    this.todoList.forEach((task) => {
+      if (task.isCompleted) bufferList.push(task);
+    });
+
+    this.renderTasks(bufferList);
+  }
+
+  showCounterActiveTasks() {
+    const counter = document.getElementById("counter-tasks");
+    counter.innerHTML = `${this.countActiveTasks} active tasks`;
   }
 
   toggleVisibleButtonAndMenu() {
@@ -152,12 +189,9 @@ class TodoTask {
     this.taskHtml.addEventListener("click", (event) => {
       let targetTask = event.target;
 
-      if (targetTask.classList.contains("task-checkbox-hide")) {
+      if (targetTask.classList.contains("task-checkbox-hide"))
         this.completeTask(targetTask);
-      }
-      if (targetTask.classList.contains("task-btn-delete")) {
-        this.deleteTask();
-      }
+      if (targetTask.classList.contains("task-btn-delete")) this.deleteTask();
     });
   }
 
@@ -167,7 +201,7 @@ class TodoTask {
   }
 
   deleteTask() {
-    this.isDeleted = true
+    this.isDeleted = true;
   }
 
   setHtmlPattern() {
