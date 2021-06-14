@@ -1,10 +1,12 @@
 class Todo {
   constructor() {
-    this.todoList = [];
+    this.tasksList = [];
     this.countActiveTasks = 0;
-    this.tasks = document.getElementById("tasks");
+    this.blockTasks = document.getElementById("tasks");
+
     this.todoForm = document.getElementById("todo-form");
     this.todoInput = document.getElementById("todo-input");
+
     this.btnCompleteAllTasks = document.getElementById("todo-btn-check");
     this.btnClearCompletedTask = document.getElementById("clear-btn");
 
@@ -18,22 +20,22 @@ class Todo {
   subsribeEvents() {
     this.todoForm.onsubmit = () => {
       this.addNewTask();
-      this.toggleVisibleButtonAndMenu();
       this.showCounterActiveTasks();
+      this.toggleVisibleButtonAndFooterMenu();
       return false;
     };
 
-    this.tasks.onchange = () => {
+    this.blockTasks.onchange = () => {
       this.checkCompletedTasks();
       this.showCounterActiveTasks();
     };
 
-    this.tasks.onclick = (event) => {
+    this.blockTasks.onclick = (event) => {
       let target = event.target;
       if (target.nodeName == "BUTTON") {
         this.clearDeletedTask();
-        this.toggleVisibleButtonAndMenu();
         this.showCounterActiveTasks();
+        this.toggleVisibleButtonAndFooterMenu();
       }
     };
 
@@ -45,7 +47,7 @@ class Todo {
 
     this.btnClearCompletedTask.onclick = () => {
       this.clearCompletedTask();
-      this.toggleVisibleButtonAndMenu();
+      this.toggleVisibleButtonAndFooterMenu();
     };
 
     this.btnAllTasks.onclick = () => {
@@ -61,22 +63,22 @@ class Todo {
     };
   }
 
+  renderTasks(tasks) {
+    this.blockTasks.innerHTML = "";
+    tasks.forEach((task) => {
+      this.blockTasks.append(task.taskHtml);
+    });
+  }
+
   addNewTask() {
     let textTask = this.todoInput.value;
     const task = new TodoTask(textTask);
 
     this.countActiveTasks++;
-    this.todoList.push(task);
+    this.tasksList.push(task);
     this.todoInput.value = "";
 
-    this.renderTasks(this.todoList);
-  }
-
-  renderTasks(tasksList) {
-    this.tasks.innerHTML = "";
-    tasksList.forEach((task) => {
-      this.tasks.append(task.taskHtml);
-    });
+    this.renderTasks(this.tasksList);
   }
 
   checkAllTasks() {
@@ -85,7 +87,7 @@ class Todo {
   }
 
   completeOrUncompleteAllTasks(flagCompletedTask) {
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       let checkboxTask = task.taskHtml.children[0].children[0];
       checkboxTask.checked = flagCompletedTask;
       task.completeTask(checkboxTask);
@@ -94,7 +96,7 @@ class Todo {
 
   checkCompletedTasks() {
     this.countActiveTasks = 0;
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       let blockTaskText = task.taskHtml.children[1];
       if (task.isCompleted) blockTaskText.classList.add("completed");
       else {
@@ -107,34 +109,34 @@ class Todo {
   clearCompletedTask() {
     let bufferList = [];
 
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       if (!task.isCompleted) bufferList.push(task);
     });
 
-    this.todoList = bufferList;
-    this.renderTasks(this.todoList);
+    this.tasksList = bufferList;
+    this.renderTasks(this.tasksList);
   }
 
   clearDeletedTask() {
     let bufferList = [];
 
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       if (!task.isDeleted) bufferList.push(task);
       else if (!task.isCompleted) this.countActiveTasks--;
     });
 
-    this.todoList = bufferList;
-    this.renderTasks(this.todoList);
+    this.tasksList = bufferList;
+    this.renderTasks(this.tasksList);
   }
 
   showAllTasks() {
-    this.renderTasks(this.todoList);
+    this.renderTasks(this.tasksList);
   }
 
   showOnlyActiveTasks() {
     let bufferList = [];
 
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       if (!task.isCompleted) bufferList.push(task);
     });
 
@@ -144,7 +146,7 @@ class Todo {
   showOnlyCompletedTasks() {
     let bufferList = [];
 
-    this.todoList.forEach((task) => {
+    this.tasksList.forEach((task) => {
       if (task.isCompleted) bufferList.push(task);
     });
 
@@ -156,13 +158,13 @@ class Todo {
     counter.innerHTML = `${this.countActiveTasks} active tasks`;
   }
 
-  toggleVisibleButtonAndMenu() {
+  toggleVisibleButtonAndFooterMenu() {
     const [todoBtnCheck, footerMenu] = [
       document.getElementById("todo-btn-check"),
       document.getElementById("footer-menu"),
     ];
 
-    if (this.todoList.length) {
+    if (this.tasksList.length) {
       todoBtnCheck.classList.remove("hide");
       footerMenu.classList.remove("hide");
     } else {
