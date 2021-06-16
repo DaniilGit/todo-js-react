@@ -1,3 +1,2 @@
-./react/dist
-./react/node_modules
-./react
+react/dist
+react/node_modules
