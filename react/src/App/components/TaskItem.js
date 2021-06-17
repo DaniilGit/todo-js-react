@@ -7,7 +7,7 @@ function TaskItem(props) {
   const [isCompleted, setCompleteTask] = useState(props.isCompleted);
 
   // Change status checkbox if task completed
-  useEffect(() => { 
+  useEffect(() => {
     const checkbox = document.getElementById(props.id);
     checkbox.checked = isCompleted;
   });
@@ -40,12 +40,13 @@ function TaskItem(props) {
   };
 
   return (
-    <div className="todo-task">
+    <div className="todo-task" >
       <div>
         <input
           id={props.id}
           className="task-checkbox-hide"
           type="checkbox"
+          data-completed={isCompleted}
           onClick={() => {
             setCompleteTask(!isCompleted);
             changeCountActiveTasks();
