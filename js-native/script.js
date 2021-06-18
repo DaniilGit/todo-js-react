@@ -72,13 +72,16 @@ class Todo {
 
   addNewTask() {
     let textTask = this.todoInput.value;
-    const task = new TodoTask(textTask);
 
-    this.countActiveTasks++;
-    this.tasksList.push(task);
-    this.todoInput.value = "";
+    if (textTask != "") {
+      const task = new TodoTask(textTask);
 
-    this.renderTasks(this.tasksList);
+      this.countActiveTasks++;
+      this.tasksList.push(task);
+      this.todoInput.value = "";
+
+      this.renderTasks(this.tasksList);
+    } else alert("Enter the text!");
   }
 
   checkAllTasks() {
