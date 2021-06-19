@@ -2,13 +2,13 @@ import React, { forwardRef, useContext, useEffect, useState } from "react";
 import Context from "./Context";
 import "../styles/todo-task.css";
 
-function TaskItem(props) {
+function TaskItem({ taskText, complete, id }) {
   const { todoData, setTodoData } = useContext(Context);
-  const [isCompleted, setCompleteTask] = useState(props.isCompleted);
+  const [isCompleted, setCompleteTask] = useState(complete);
 
   // Change status checkbox if task completed
   useEffect(() => {
-    const checkbox = document.getElementById(props.id);
+    const checkbox = document.getElementById(id);
     checkbox.checked = isCompleted;
   });
 
@@ -27,7 +27,7 @@ function TaskItem(props) {
 
   const deleleTask = function () {
     let taskList = todoData.taskList;
-    let newTaskList = taskList.filter((task) => task.props.id != props.id);
+    let newTaskList = taskList.filter((task) => task.props.id != id);
     let count = todoData.countActiveTasks;
 
     if (!isCompleted) count--;
@@ -40,10 +40,10 @@ function TaskItem(props) {
   };
 
   return (
-    <div className="todo-task" >
+    <div className="todo-task">
       <div>
         <input
-          id={props.id}
+          id={id}
           className="task-checkbox-hide"
           type="checkbox"
           data-completed={isCompleted}
@@ -52,9 +52,9 @@ function TaskItem(props) {
             changeCountActiveTasks();
           }}
         ></input>
-        <label className="task-checkbox" htmlFor={props.id}></label>
+        <label className="task-checkbox" htmlFor={id}></label>
       </div>
-      <div className={completeTaskStyle()}>{props.taskText}</div>
+      <div className={completeTaskStyle()}>{taskText}</div>
       <button className="task-btn-delete" onClick={deleleTask}>
         &#10006;
       </button>

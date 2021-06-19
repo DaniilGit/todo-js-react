@@ -10,7 +10,7 @@ function InputForm() {
     let count = todoData.countActiveTasks + 1;
     let id = Math.random();
     let newTask = (
-      <TaskItem taskText={taskText} isCompleted={false} key={id} id={id} />
+      <TaskItem taskText={taskText} complete={false} key={id} id={id} />
     );
 
     setTodoData({
@@ -30,13 +30,13 @@ function InputForm() {
       if (todoData.countActiveTasks != 0) {
         count = 0;
         return React.cloneElement(task, {
-          isCompleted: true,
+          complete: true,
           key: Math.random(),
         });
       } else {
         count = todoData.taskList.length;
         return React.cloneElement(task, {
-          isCompleted: false,
+          complete: false,
           key: Math.random(),
         });
       }
